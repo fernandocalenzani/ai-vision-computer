@@ -8,6 +8,7 @@ requests = "*"
 opencv-python = "*"
 numpy = "*"
 matplot = "*"
+dlib = "*"
 
 [dev-packages]
 

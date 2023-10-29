@@ -4,25 +4,6 @@
 
 - [Fernando Calenzani](fernando@arisetechnology.com.br)
 
-## 0. Requisitos:
-
-- Linux Ubuntu
-- Python 3 (`sudo apt-get install python3`)
-- jq (`sudo apt-get install jq`)
-
-### 1. Scripts:
-
-Os comandos para instalar, fazer a build ou iniciar algum script são:
-
-```bash
-1. sh run.sh --build
-2. sh run.sh --main
-3. sh run.sh --install py_package
-4. sh run.sh --uninstall py_package
-```
-
-obs: Cadastre o script em project.json e inclua o caminho em que está a pasta .py
-
 ## License
 
 This project is licensed under the MIT License - see the [MIT](LICENSE) file for details.
@@ -63,8 +44,24 @@ Here are some of the key topics I will be covering during this study project:
 - AdaBoost: Training
 - Feature Selection
 - sum(white pixels - black pixels) each element
-- resulting matrix  [ 2 | 3 | 7 ]
-                    [ 1 | 5 | 1 ]
-                    [ 0 | 3 | 6 ]
+- resulting matrix
+  [ 2 | 3 | 7 ]
+  [ 1 | 5 | 1 ]
+  [ 0 | 3 | 6 ]
 - Then, send the image to many specific location classifiers such as: eyes, eyebrows, nose. Each one will be a classifier: IMG -> C1 -> C2 -> ... -> Cn
 - in the end, the detection is done, if all the classifiers detected the characteristics. Then, the face is detected correctly.
+
+#### 2 HOG - Histograms of Oriented Gradients
+
+- Derivation: calculate how change the colors in image: zero derivate, small derivate, high derivate
+- High derivate: there are the big variations between the environment (different object). Different colors
+- Zero derivate: there are not variations between the envoironment (the same object). The same colors
+- small derivate: there are a small variations between the environment. Small differences between colors
+
+- Gradient Vector: the direction that the values exchange
+- What direction the values are increasing or decreasing
+
+- Gradient Magnitude
+- Gradient Direction
+
+- Using Gradient Matrix, we can build a histogram. The histogram show how many times the range value appears in the matrix 
