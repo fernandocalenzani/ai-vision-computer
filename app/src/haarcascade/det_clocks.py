@@ -4,10 +4,6 @@ import cv2 as cv
 image = cv.imread('data/Images/clock.jpg')
 print(image.shape)
 
-# change to gray color, to decrease the information in image (600, 800) pixels:
-imageGray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-print(imageGray.shape)
-
 training = cv.CascadeClassifier(
     'data/Cascades/clocks.xml')
 
@@ -22,8 +18,9 @@ minSize: minimum size of the face to detect faces
 maxSize: maximum size of the face to detect faces
 """
 detec = training.detectMultiScale(
-    imageGray, scaleFactor=1.3, minSize=(30, 30))
+    image, scaleFactor=1.03, minNeighbors=1, minSize=(100, 100), maxSize=(205, 205))
 print(detec)
+
 for x, y, w, h in detec:
     print(w, h)
     cv.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 1)

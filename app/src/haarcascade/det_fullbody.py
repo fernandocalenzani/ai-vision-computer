@@ -22,7 +22,7 @@ minSize: minimum size of the face to detect faces
 maxSize: maximum size of the face to detect faces
 """
 detec = training.detectMultiScale(
-    imageGray, scaleFactor=1.3, minSize=(30, 30))
+    imageGray, scaleFactor=1.05, minNeighbors=5)
 print(detec)
 for x, y, w, h in detec:
     print(w, h)
