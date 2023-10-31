@@ -12,6 +12,7 @@ dlib = "*"
 pillow = "*"
 scikit-learn = "*"
 seaborn = "*"
+opencv-contrib-python = "*"
 
 [dev-packages]
 

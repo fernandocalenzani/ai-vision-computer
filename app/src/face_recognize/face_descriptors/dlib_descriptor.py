@@ -4,24 +4,34 @@ import cv2
 import dlib
 import numpy as np
 from PIL import Image
+from sklearn.metrics import accuracy_score
 
 """
 PRE-PROCESSING
 """
+path_weights_shape = 'data/Weights/shape_predictor_68_face_landmarks.dat'
+path_weights_model = 'data/Weights/dlib_face_recognition_resnet_model_v1.dat'
+
+path_dataset_train = 'data/Datasets/yalefaces/train'
+path_dataset_test = 'data/Datasets/yalefaces/test'
+
+
+def getSubjectIndex(index):
+    return int(os.path.split(index)[
+        1].split('.')[0].replace('subject', ''))
+
 
 face_detector = dlib.get_frontal_face_detector()
 
-point_detector = dlib.shape_predictor(
-    'data/Weights/shape_predictor_68_face_landmarks.dat')
+point_detector = dlib.shape_predictor(path_weights_shape)
 
-face_descriptor_extractor = dlib.face_recognition_model_v1(
-    'data/Weights/dlib_face_recognition_resnet_model_v1.dat')
+face_descriptor_extractor = dlib.face_recognition_model_v1(path_weights_model)
 
 index = {}
 idx = 0
 face_descriptors = None
-paths = [os.path.join('data/Datasets/yalefaces/train', f)
-         for f in os.listdir('data/Datasets/yalefaces/train')]
+paths = [os.path.join(path_dataset_train, f)
+         for f in os.listdir(path_dataset_train)]
 
 """
 FACE DESCRIPTIONS
@@ -65,15 +75,17 @@ face_descriptors[131]
 
 sim = np.linalg.norm(face_descriptors[131] - face_descriptors[1:], axis=1)
 less_d = np.argmin(sim)
-print(less_d)
+
 
 """
 FACE DETECTION
 """
 min_confidance = 0.5
+predictions = []
+exp_output = []
 
-paths = [os.path.join('data/Datasets/yalefaces/test', f)
-         for f in os.listdir('data/Datasets/yalefaces/test')]
+paths = [os.path.join(path_dataset_test, f)
+         for f in os.listdir(path_dataset_test)]
 
 for path in paths:
     image = np.array(Image.open(path).convert('RGB'), 'uint8')
@@ -99,13 +111,14 @@ for path in paths:
         min_distance = distance[min_index]
 
         if (min_distance <= min_confidance):
-            pred_name = int(os.path.split(index[min_index])[
-                            1].split('.')[0].replace('subject', ''))
+            pred_name = getSubjectIndex(index[min_index])
         else:
             pred_name = None
 
-        real_name = int(os.path.split(index[min_index])[
-            1].split('.')[0].replace('subject', ''))
+        real_name = getSubjectIndex(index[min_index])
+
+        predictions.append(pred_name)
+        exp_output.append(real_name)
 
         cv2.putText(image, 'Pred: ' + str(pred_name), (10, 30),
                     cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 255, 0))
@@ -115,3 +128,12 @@ for path in paths:
         cv2.imshow("img", image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+
+"""
+PERFORMANCE
+"""
+predictions = np.array(predictions)
+exp_output = np.array(exp_output)
+
+acc = accuracy_score(exp_output, predictions)

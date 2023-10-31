@@ -2,3 +2,4 @@ data/
 .env
 .vscode
 *.yml
+.pytest_cache
