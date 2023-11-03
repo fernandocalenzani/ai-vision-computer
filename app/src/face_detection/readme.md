@@ -38,9 +38,9 @@ Here are some of the key topics I will be covering during this study project:
   [ 0 | 3 | 6 ]
 - Then, send the image to many specific location classifiers such as: eyes, eyebrows, nose. Each one will be a classifier: IMG -> C1 -> C2 -> ... -> Cn
 - in the end, the detection is done, if all the classifiers detected the characteristics. Then, the face is detected correctly.
-
+```
 #### 2 HOG - Histograms of Oriented Gradients
-
+```
 - Derivation: calculate how change the colors in image: zero derivate, small derivate, high derivate
 - High derivate: there are the big variations between the environment (different object). Different colors
 - Zero derivate: there are not variations between the envoironment (the same object). The same colors
