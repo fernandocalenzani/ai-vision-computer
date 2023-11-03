@@ -20,7 +20,7 @@ Here are some of the key topics I will be covering during this study project:
 ```
 
 ## Base
-
+```
 1. Inicialização:
    Inicialize a estrutura da rede neural, incluindo o número de camadas, o número de neurônios em cada camada, os pesos iniciais e as funções de ativação.
 
@@ -44,18 +44,19 @@ Here are some of the key topics I will be covering during this study project:
 6. Predição:
    Use a rede neural treinada para fazer previsões em novos dados não vistos.
 
-- Bias: additional neuron to improve the performance
-
+7. Bias: additional neuron to improve the performance
+```
 ### MEAN SQUARE ERROR (MSE)
-
+```
 - MSE = (1/n) . SUM(fi - yi)^2
-
+```
 ### ROOT MEAN SQUARE ERROR (RMSE)
-
+```
 - RMSE = ((1/n) . SUM(fi - yi)^2)^1/2
-
+```
 ### PARAMS
-
+```
 - Learning Rate
 - Batch Size
 - Epochs
+```
