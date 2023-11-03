@@ -1,7 +1,7 @@
 # COMPUTER VISION - FACE RECOGNIZE
 
 ## Important Topics
-
+```
 Here are some of the key topics I will be covering during this study project:
 
 - Image Processing
@@ -11,16 +11,16 @@ Here are some of the key topics I will be covering during this study project:
 - Convolutional Neural Networks (CNNs)
 - OpenCV
 - Deep Learning for Computer Vision
-
+```
 ### Face Recognize
-
+```
 1.  Face Detection
 2.  Face Recognize
     2.1. Face recognize using LBPH algorithm and OpenCV
     2.2. Face recognition using Dlib, CNN and distance calculate algorithm
-
+```
 #### LBPH: Local Binary Pattern Histograms
-
+```
     1.1. The matrix representation:
     M (9 pixels) =
     [12 15 18]
@@ -57,3 +57,4 @@ Here are some of the key topics I will be covering during this study project:
     block have your own histogram. Each person have different histograms and each face
     characteristics (eyes, mouth...) have different histograms
     2.4. Comparing each histogram with the real person and you can get the result
+```

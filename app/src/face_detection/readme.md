@@ -3,7 +3,7 @@
 ## Important Topics
 
 Here are some of the key topics I will be covering during this study project:
-
+```
 - Image Processing
 - Object Detection
 - Image Classification
@@ -11,23 +11,23 @@ Here are some of the key topics I will be covering during this study project:
 - Convolutional Neural Networks (CNNs)
 - OpenCV
 - Deep Learning for Computer Vision
-
+```
 ### Face Detection
-
+```
 1. Haarcascade and OpenCV
 2. Eyes, Face, People and Clock
 3. HOG and Dlib
 4. Face detection using CNN using Dlib
 5. Face detection using webcam
-
+```
 #### 1 IMAGE AND PIXEL
-
+```
 1. Pixel: least information available -> l x c = total pixels | 32 x 32 = 1024 pixels
 2. RGB: (red, green, blue) -> (0-255,0-255,0-255) -> total = 3 x 1024 = 3072 values
 3. RGB to Gray -> the values R,G and B are always the same values = [(10,10,10), (100,100,100)] or 1024 values saved in memory
-
+```
 #### 2 HAARCASCADE
-
+```
 - Two database: positive images and negative images
 - AdaBoost: Training
 - Feature Selection
@@ -53,3 +53,4 @@ Here are some of the key topics I will be covering during this study project:
 - Gradient Direction
 
 - Using Gradient Matrix, we can build a histogram. The histogram show how many times the range value appears in the matrix
+```
