@@ -3,3 +3,4 @@ data/
 .env
 *.yml
 .pytest_cache
+*.hdf5
