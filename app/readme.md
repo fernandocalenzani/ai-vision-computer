@@ -1,5 +1,22 @@
 # COMPUTER VISION
 
+## TOPIC
+
+```
+1. Deteccao de Faces
+2. Reconhecimento Facial
+3. Rastreamento de Objetos
+4. Classificacao de Imagens
+5. Classificacao de Emocoes
+6. Reconhecimento de Textos
+7. Reconhecimento de Gestos e Acoes
+8. GANs (Redes Adversariais Generativas)
+9. Geracao de Novas Imagens atraves de uma Imagem Original (Deep Dream)
+10. Transferencia de Estilos
+11. Segmentacao de Imagens
+12. Autoenconders
+```
+
 ## Author
 
 - [Fernando Calenzani](fernando@arisetechnology.com.br)
