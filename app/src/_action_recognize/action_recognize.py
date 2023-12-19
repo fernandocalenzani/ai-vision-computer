@@ -1,178 +1,111 @@
-import os
-
 import cv2
 import matplotlib.pyplot as plt
-import numpy as np
-import tensorflow as tf
-from keras.models import save_model
-from sklearn.metrics import (accuracy_score, classification_report,
-                             confusion_matrix)
 
 
-def preprocessing(path_train, path_test, batch_size, target_size, class_mode, shuffle):
-    load = tf.keras.preprocessing.image
+def preprocessing(frame, scalefactor=1.0/255):
+    img_blob = cv2.dnn.blobFromImage(
+        frame, scalefactor=scalefactor, size=(frame.shape[1], frame.shape[0]))
 
-    gen_train = load.ImageDataGenerator(
-        rescale=1./255, rotation_range=7, horizontal_flip=True, zoom_range=0.2)
-
-    dataset_train = gen_train.flow_from_directory(
-        path_train,
-        target_size=target_size,
-        class_mode=class_mode,
-        batch_size=batch_size,
-        shuffle=shuffle
-    )
-
-    gen_test = load.ImageDataGenerator(rescale=1./255)
-
-    dataset_test = gen_test.flow_from_directory(
-        path_test,
-        target_size=target_size,
-        class_mode=class_mode,
-        batch_size=1,
-        shuffle=False
-    )
-
-    return dataset_train, dataset_test
+    return img_blob, frame
 
 
-def model(n_filters, kernel_size, activation, input_shape, pool_size, units, output_units, activation_output, dataset_train, epochs):
-    builder = tf.keras.layers
-    network = tf.keras.models.Sequential()
-
-    network.add(builder.Conv2D(
-        filters=n_filters,
-        kernel_size=kernel_size,
-        activation=activation,
-        input_shape=input_shape
-    ))
-    network.add(builder.MaxPool2D(pool_size=pool_size))
-
-    network.add(builder.Conv2D(
-        filters=n_filters,
-        kernel_size=kernel_size,
-        activation=activation,
-    ))
-    network.add(builder.MaxPool2D(pool_size=pool_size))
-
-    network.add(builder.Conv2D(
-        filters=n_filters,
-        kernel_size=kernel_size,
-        activation=activation,
-    ))
-
-    network.add(builder.MaxPool2D(pool_size=pool_size))
-
-    network.add(builder.Flatten())
-
-    network.add(builder.Dense(units=units, activation=activation))
-
-    network.add(builder.Dense(units=units, activation=activation))
-
-    network.add(builder.Dense(units=output_units,
-                activation=activation_output))
-
-    network.compile(optimizer='Adam',
-                    loss='categorical_crossentropy', metrics=['accuracy'])
-
-    history = network.fit(dataset_train, epochs=epochs)
-
-    model_json = network.to_json()
-    with open('network.json', 'w') as f:
-        f.write(model_json)
-
-    nn_saved = save_model(network, 'weights.hdf5')
-
-    return history
+def load_network(path_network_config, path_weights):
+    network = cv2.dnn.readNetFromCaffe(path_network_config, path_weights)
+    return network
 
 
-def get_metrics(model, dataset_test):
-    try:
-        metrics = {}
+def actions_prediction(points):
+    head, hand_left, hand_right = 0, 0, 0
 
-        predictions = model.predict(dataset_test)
+    for i, points in enumerate(points):
+        if i == 0:
+            head = points[1]
+        elif i == 4:
+            hand_right = points[1]
+        elif i == 7:
+            hand_left = points[1]
 
-        metrics['predictions'] = np.argmax(predictions, axis=1)
-        metrics['accuracy_score'] = accuracy_score(
-            dataset_test.classes, metrics['predictions'])
-
-        metrics['cm'] = confusion_matrix(
-            dataset_test.classes, metrics['predictions'])
-        metrics['classification_report'] = classification_report(
-            dataset_test.classes, metrics['predictions'])
-
-        return metrics
-
-    except:
-        return metrics
+    if hand_right <= head and hand_left <= head:
+        return True
+    else:
+        return False
 
 
-def load_model():
-    with open('network.json') as f:
-        json_saved_model = f.read()
+def run_frames(
+    video_path,
+    scaleFactor,
+    path_network_config,
+    path_weights,
+    n_pointers,
+    threshold
+):
+    points = []
+    conection_points = [[0, 1], [1, 2], [2, 3], [3, 4], [1, 5], [5, 6], [
+        6, 7], [1, 14], [14, 8], [8, 9], [9, 10], [14, 11], [11, 12], [12, 13]]
 
-    network_loaded = tf.keras.models.model_from_json(json_saved_model)
-    network_loaded.load_weights('weights.hdf5')
+    cap = cv2.VideoCapture(video_path)
+    connected, frame = cap.read()
 
-    network_loaded.compile(optimizer='Adam',
-                           loss='categorical_crossentropy', metrics=['accuracy'])
+    save_video = cv2.VideoWriter('../../data/Videos/emotion_test01_result.avi',
+                                 cv2.VideoWriter_fourcc(*'XVID'),
+                                 10,
+                                 (frame.shape[1], frame.shape[0]))
 
-    return network_loaded
+    while cv2.waitKey(1) < 0:
+        connected, frame = cap.read()
+
+        if not connected:
+            break
+
+        img_blob, frame = preprocessing(
+            frame=frame, scalefactor=scaleFactor)
+        network = load_network(path_network_config, path_weights)
+
+        network.setInput(img_blob)
+
+        output = network.forward()
+
+        pos_l = output.shape[3]
+        pos_h = output.shape[2]
+
+        for i in range(n_pointers):
+            confidance_map = output[0, i, :, :]
+            _, confidance, _, point = cv2.minMaxLoc(confidance_map)
+
+            x = int((img_blob.shape[3] * point[0])/pos_l)
+            y = int((img_blob.shape[2] * point[1])/pos_h)
+
+            if confidance > threshold:
+                cv2.circle(frame, (x, y), 5, (0, 255, 0), thickness=-1)
+                cv2.putText(frame, '{}'.format(i), (x, y),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255))
+
+                points.append((x, y))
+            else:
+                points.append(None)
+
+        for conection in conection_points:
+            partA = conection[0]
+            partB = conection[1]
+
+            if points[partA] and points[partB]:
+                cv2.line(frame, points[partA], points[partB], (255, 0, 0))
+
+        if actions_prediction(points) == True:
+            cv2.putText(frame, 'OK ', (50, 200),
+                        cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255))
+
+        save_video.write(frame)
+        save_video.release()
+
+    return output, points
 
 
-def predict_img(img, len_resize, network):
-    img = cv2.imread(img)
-    img = cv2.resize(img, (len_resize[1], len_resize[2]))
-    img = img/255
-    img = img.reshape(len_resize[0], len_resize[1],
-                      len_resize[2], len_resize[3])
-
-    prediction = network.predict(img)
-    prediction = np.argmax(prediction)
-
-    return prediction
-
-
-def runner(img_path_to_detect, dataset_train_path, dataset_test_path, train=False):
-    dataset_train, dataset_test = preprocessing(
-        dataset_train_path,
-        dataset_test_path,
-        batch_size=8,
-        target_size=(64, 64),
-        class_mode='categorical',
-        shuffle=True
-    )
-
-    if train == True:
-        model(
-            n_filters=32,
-            kernel_size=(3, 3),
-            activation='relu',
-            input_shape=(64, 64, 3),
-            pool_size=(2, 2),
-            units=3137,
-            output_units=2,
-            activation_output='softmax',
-            dataset_train=dataset_train,
-            epochs=10
-        )
-
-    model_loaded = load_model()
-
-    metrics = get_metrics(model_loaded, dataset_test=dataset_test)
-
-    output = predict_img(
-        img_path_to_detect,
-        [-1, 64, 64, 3],
-        model_loaded
-    )
-
-    return metrics, output
-
-
-output_network = runner(
-    img_path_to_detect="../../data/Datasets/cat_dog_2/cat_dog_2/test_set/cat/cat.3500.jpg",
-    dataset_train_path="../../data/Datasets/cat_dog_2/cat_dog_2/training_set",
-    dataset_test_path="../../data/Datasets/cat_dog_2/cat_dog_2/test_set",
-    train=True
+output, points = run_frames(
+    video_path='../../data/Videos/gesture1.mp4',
+    scaleFactor=1.0/255,
+    path_network_config='../../data/Weights/pose_deploy_linevec_faster_4_stages.prototxt',
+    path_weights='../../data/Weights/pose_iter_160000.caffemodel',
+    n_pointers=15,
+    threshold=0.01
 )

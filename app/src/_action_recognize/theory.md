@@ -3,10 +3,15 @@
 ## PROCESS:
 
 ```
-1. Image
-2. Feature Maps
-3. Max Polling
-4. Flattening
-5. Dense Neural Network
+1. CNN - Detecting Objects
+2. Detecting Body Parts (if human detected), Direction
+3. Detecting Guns
+4. Face Recognizer
+5. Action Recognizer
+
 6. Result
 ```
+
+## Dataset
+
+MPII - Human Pose Dataset

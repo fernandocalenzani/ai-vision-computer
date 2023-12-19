@@ -11,10 +11,7 @@
 6. Reconhecimento de Textos
 7. Reconhecimento de Gestos e Acoes
 8. GANs (Redes Adversariais Generativas)
-9. Geracao de Novas Imagens atraves de uma Imagem Original (Deep Dream)
-10. Transferencia de Estilos
-11. Segmentacao de Imagens
-12. Autoenconders
+9. Segmentacao de Imagens
 ```
 
 ## Author
