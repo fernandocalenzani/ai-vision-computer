@@ -4,3 +4,4 @@ data/
 *.yml
 .pytest_cache
 *.hdf5
+Mask_RCNN/
